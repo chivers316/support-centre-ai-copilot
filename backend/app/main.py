@@ -1,8 +1,13 @@
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File
 from app.services.pdf_service import extract_text
+from app.services.chunk_service import chunk_text
+from app.services.vector_store import add_chunks
+from app.routes.chat import router as chat_router
 
 app = FastAPI()
+
+app.include_router(chat_router)
 
 UPLOAD_FOLDER = Path("uploads")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
@@ -26,8 +31,15 @@ async def upload_pdf(
 
     text = extract_text(str(file_path))
 
+    chunks = chunk_text(text)
+
+    add_chunks(
+        file.filename,
+        chunks
+    )
+
     return {
         "filename": file.filename,
         "characters": len(text),
-        "preview": text[:500]
+        "chunks_created": len(chunks)
     }
