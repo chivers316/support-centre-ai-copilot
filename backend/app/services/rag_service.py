@@ -12,8 +12,9 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1"
 )
 
+
 def retrieve_context(question: str):
-    
+
     results = collection.query(
         query_texts=[question],
         n_results=3
@@ -25,11 +26,29 @@ def retrieve_context(question: str):
     print("DOCUMENTS FOUND:")
     print(documents)
 
-    return "\n\n".join(documents)
+    print("METADATAS FOUND:")
+    print(metadatas)
+
+    source = None
+
+    if metadatas:
+        first_metadata = metadatas[0]
+
+        if first_metadata and "source" in first_metadata:
+            source = first_metadata["source"]
+
+    return {
+        "context": "\n\n".join(documents),
+        "source": source
+    }
+
 
 def generate_answer(question: str):
-    
-    context = retrieve_context(question)
+
+    result = retrieve_context(question)
+
+    context = result["context"]
+    source = result["source"]
 
     prompt = f"""
 You are a support centre AI assistant.
@@ -57,4 +76,7 @@ Question:
         ]
     )
 
-    return response.choices[0].message.content
+    return {
+        "answer": response.choices[0].message.content,
+        "source": source
+    }

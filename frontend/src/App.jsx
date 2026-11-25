@@ -53,8 +53,9 @@ function App() {
       console.log("API Response:", data);
       
       const assistantMessage = {
-          role: "assistant",
-          content: data
+        role: "assistant",
+        content: data.answer,
+        source: data.source
       };
 
       setMessages(prev => [
@@ -163,25 +164,13 @@ function App() {
                     {message.content}
                 </div>
 
-                {
-                    message.sources &&
-                    message.sources.length > 0 && (
-
-                        <div className="mt-3 text-sm text-slate-500">
-
-                            <strong>Sources:</strong>
-
-                            <ul>
-                                {message.sources.map((source) => (
-                                    <li key={source}>
-                                        {source}
-                                    </li>
-                                ))}
-                            </ul>
-
+                    {
+                      message.source && (
+                        <div className="mt-2 text-xs text-slate-500">
+                          📄 {message.source}
                         </div>
-                    )
-                }
+                      )
+                    }
 
                 </div>
 
