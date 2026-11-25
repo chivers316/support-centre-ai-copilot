@@ -20,6 +20,10 @@ def retrieve_context(question: str):
     )
 
     documents = results["documents"][0]
+    metadatas = results["metadatas"][0]
+
+    print("DOCUMENTS FOUND:")
+    print(documents)
 
     return "\n\n".join(documents)
 

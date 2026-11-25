@@ -4,8 +4,23 @@ from app.services.pdf_service import extract_text
 from app.services.chunk_service import chunk_text
 from app.services.vector_store import add_chunks
 from app.routes.chat import router as chat_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+@app.on_event("startup")
+def load_knowledge_base():
+    pass
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 app.include_router(chat_router)
 
