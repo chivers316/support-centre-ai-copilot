@@ -10,6 +10,7 @@ router = APIRouter()
 class ChatRequest(BaseModel):
     question: str
     documents: list[str] = []
+    history: list = []
 
 
 @router.post("/chat")
@@ -23,5 +24,7 @@ def chat(request: ChatRequest):
 
     return generate_answer(
         request.question,
-        request.documents
+        request.documents,
+        request.history
+
     )

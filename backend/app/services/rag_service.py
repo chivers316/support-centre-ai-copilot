@@ -69,7 +69,16 @@ def retrieve_context(question: str, selected_documents: list[str] = []):
     }
 
 
-def generate_answer(question: str, documents: list[str] = []):
+def generate_answer(question: str, documents: list[str] = [], history: list = []):
+
+    history_text = ""
+
+    for message in history[-6:]:
+
+        history_text += (
+            f"{message['role']}: "
+            f"{message['content']}\n"
+        )
 
     result = retrieve_context(question, documents)
 
@@ -79,11 +88,17 @@ def generate_answer(question: str, documents: list[str] = []):
     prompt = f"""
 You are a support centre AI assistant.
 
-Answer the user's question in a complete sentence using only the supplied context.
+Use both the supplied context and the conversation history.
+
+Answer the user's question in a complete sentence.
 
 If the answer cannot be found in the context, say:
 
 'I could not find that information in the uploaded documents.'
+
+Conversation History:
+
+{history_text}
 
 Context:
 {context}

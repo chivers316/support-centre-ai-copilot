@@ -52,7 +52,8 @@ function App() {
           },
             body: JSON.stringify({
               question: currentQuestion,
-              documents: selectedDocuments
+              documents: selectedDocuments,
+              history: messages
             })
         }
       );
