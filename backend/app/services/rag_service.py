@@ -13,39 +13,65 @@ client = OpenAI(
 )
 
 
-def retrieve_context(question: str):
-
+def retrieve_context(question: str, selected_documents: list[str] = []):
+    
     results = collection.query(
         query_texts=[question],
-        n_results=3
+        n_results=10
     )
 
-    documents = results["documents"][0]
+    documents_found = results["documents"][0]
     metadatas = results["metadatas"][0]
 
     print("DOCUMENTS FOUND:")
-    print(documents)
+    print(documents_found)
+
+    print("SELECTED DOCUMENTS:")
+    print(selected_documents)
 
     print("METADATAS FOUND:")
     print(metadatas)
+
+    filtered_documents = []
+    filtered_metadatas = []
+
+    if selected_documents:
+
+        for doc, metadata in zip(
+            documents_found,
+            metadatas
+        ):
+
+            if (
+                metadata and
+                metadata.get("source") in selected_documents
+            ):
+                filtered_documents.append(doc)
+                filtered_metadatas.append(metadata)
+
+        documents_found = filtered_documents
+        metadatas = filtered_metadatas
 
     source = None
 
     if metadatas:
         first_metadata = metadatas[0]
 
-        if first_metadata and "source" in first_metadata:
+        if (
+            first_metadata and
+            "source" in first_metadata
+        ):
             source = first_metadata["source"]
 
     return {
-        "context": "\n\n".join(documents),
+        "context": "\n\n".join(documents_found),
         "source": source
     }
 
 
-def generate_answer(question: str):
+def generate_answer(question: str, documents: list[str] = []):
 
-    result = retrieve_context(question)
+    result = retrieve_context(question, documents)
 
     context = result["context"]
     source = result["source"]

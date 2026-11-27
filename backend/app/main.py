@@ -5,6 +5,7 @@ from app.services.chunk_service import chunk_text
 from app.services.vector_store import add_chunks
 from app.routes.chat import router as chat_router
 from fastapi.middleware.cors import CORSMiddleware
+from app.routes.documents import router as documents_router
 
 app = FastAPI()
 
@@ -21,6 +22,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+app.include_router(documents_router)
 
 app.include_router(chat_router)
 
